@@ -150,6 +150,11 @@ CREATE OR REPLACE STAGE extstg_az_stackoverflow_users
     STORAGE_INTEGRATION = az_datalake_storage_integration
     URL = 'azure://dmlabstorage.blob.core.windows.net/raw/stackoverflow/users';
     
+CREATE OR REPLACE STAGE extstg_az_stackoverflow_posttypes
+    FILE_FORMAT = ( FORMAT_NAME = 'csv')
+    STORAGE_INTEGRATION = az_datalake_storage_integration
+    URL = 'azure://dmlabstorage.blob.core.windows.net/raw/stackoverflow/posttypes';
+    
 CREATE OR REPLACE TRANSIENT TABLE raw.stackoverflow_comments    (id NUMBER, postid NUMBER, score NUMBER, text VARCHAR, creationdate DATETIME, userdisplayname VARCHAR, userid VARCHAR, contentlicense VARCHAR);
 
 CREATE OR REPLACE TRANSIENT TABLE raw.stackoverflow_posts       (id NUMBER, posttypeid NUMBER, acceptanswerid VARCHAR, parentid VARCHAR, creationdate DATETIME, deletiondate VARCHAR, score VARCHAR, viewcount VARCHAR, body VARCHAR, owneruserid VARCHAR, ownerdisplayname VARCHAR, lasteditoruserid VARCHAR, lasteditordisplayname VARCHAR, lasteditdate VARCHAR, lastactivitydate DATETIME, title VARCHAR, tags VARCHAR, answercount VARCHAR, commentcount VARCHAR, favoritecount VARCHAR, closeddate VARCHAR, communityowneddate VARCHAR, contentlicense VARCHAR);
@@ -157,6 +162,8 @@ CREATE OR REPLACE TRANSIENT TABLE raw.stackoverflow_posts       (id NUMBER, post
 CREATE OR REPLACE TRANSIENT TABLE raw.stackoverflow_posttags    (postid NUMBER, tagid NUMBER);
 
 CREATE OR REPLACE TRANSIENT TABLE raw.stackoverflow_users       (id NUMBER, reputation NUMBER, creationdate DATETIME, displayname VARCHAR, lastaccessdate DATETIME, websiteurl VARCHAR, location VARCHAR, aboutme VARCHAR, views NUMBER, upvotes NUMBER, downvotes NUMBER, profileimageurl VARCHAR, emailhash VARCHAR, accountid NUMBER)
+
+CREATE OR REPLACE TRANSIENT TABLE raw.stackoverflow_posttypes   (id NUMBER, name VARCHAR);
 
 COPY INTO raw.stackoverflow_comments
 FROM @extstg_az_stackoverflow_comments
@@ -174,7 +181,13 @@ COPY INTO raw.stackoverflow_users
 FROM @extstg_az_stackoverflow_users
 PATTERN = '.*[.]csv';
 
-SELECT * FROM raw.stackoverflow_users;
+COPY INTO raw.stackoverflow_posttypes
+FROM @extstg_az_stackoverflow_posttypes
+PATTERN = '.*[.]csv';
+
+
+
+SELECT * FROM raw.stackoverflow_posttypes;
 
 
 
